@@ -22,12 +22,15 @@ const BookingForm = ({ closeBooking }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    try {
-    
-     await axios.post("https://resort-booking-app-4sqm.onrender.com/api/bookings", formData);
 
+    try {
+      // ✅ Your Render backend URL
+      const BACKEND_URL = "https://resort-booking-app-4sqm.onrender.com";
+
+      await axios.post(`${BACKEND_URL}/api/book`, formData);
 
       setMessage("Booking successful! We will contact you shortly.");
+
       setFormData({
         name: "",
         email: "",
@@ -38,7 +41,6 @@ const BookingForm = ({ closeBooking }) => {
         roomType: "Deluxe",
       });
 
-      // auto-close success message after 3s
       setTimeout(() => setMessage(""), 3000);
     } catch (err) {
       console.error(err);
@@ -51,7 +53,6 @@ const BookingForm = ({ closeBooking }) => {
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
       <div className="bg-white p-8 rounded-lg max-w-lg w-full relative shadow-lg">
-
         <button
           onClick={closeBooking}
           className="absolute top-2 right-2 text-gray-500 hover:text-gray-800 font-bold text-xl"
