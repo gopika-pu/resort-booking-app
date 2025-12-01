@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 
-
+// Original image list
 const galleryImages = [
   "https://i.ibb.co/C5sZyTYN/premium-photo-1687960116497-0dc41e1808a2.jpg",
   "https://i.ibb.co/fVD25xcC/pexels-pixabay-258154.jpg",
@@ -10,7 +10,7 @@ const galleryImages = [
   "https://i.ibb.co/jYgcNkM/caption.jpg"
 ];
 
-// Split into groups of 3
+// Function to divide array into chunks
 const chunkImages = (arr, size) =>
   arr.reduce((chunks, item, index) => {
     const chunkIndex = Math.floor(index / size);
@@ -19,29 +19,57 @@ const chunkImages = (arr, size) =>
     return chunks;
   }, []);
 
-const slides = chunkImages(galleryImages, 3);
-
 const GallerySection = () => {
   const [current, setCurrent] = useState(0);
+  const [slides, setSlides] = useState([]);
 
-  // Auto-slide every 3 seconds
+  // 💡 Detect screen size and update slides count
+  const updateSlides = () => {
+    let size = 3; // default desktop
+
+    if (window.innerWidth < 768) {
+      size = 1; // mobile
+    } else if (window.innerWidth < 1024) {
+      size = 2; // tablet
+    }
+
+    const newSlides = chunkImages(galleryImages, size);
+    setSlides(newSlides);
+
+    // prevent slide index overflow
+    if (current >= newSlides.length) setCurrent(0);
+  };
+
+  useEffect(() => {
+    updateSlides();
+    window.addEventListener("resize", updateSlides);
+    return () => window.removeEventListener("resize", updateSlides);
+  }, []);
+
+  // Auto-slide every 5 sec
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrent((prev) => (prev + 1) % slides.length);
     }, 5000);
 
     return () => clearInterval(timer);
-  }, []);
+  }, [slides]);
+
+  if (slides.length === 0) return null;
 
   return (
     <section className="py-16 gallery">
       <h2 className="text-4xl font-bold text-center mb-10">Resort Views</h2>
 
-      {/* Slide container */}
-      <div className="max-w-6xl mx-auto px-4" style={{scrollBehavior:"smooth"}}>
-        <div className="grid grid-cols-3 gap-4 transition-all duration-700 ease-out img-card">
+      <div className="max-w-6xl mx-auto px-4" style={{ scrollBehavior: "smooth" }}>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 transition-all duration-700 ease-out">
           {slides[current].map((img, idx) => (
-            <img key={idx} src={img} alt="" className="w-full h-60 object-cover rounded-xl shadow-md" />
+            <img
+              key={idx}
+              src={img}
+              alt=""
+              className="w-full h-60 object-cover rounded-xl shadow-md"
+            />
           ))}
         </div>
       </div>
