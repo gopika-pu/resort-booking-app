@@ -25,7 +25,7 @@ const BookingForm = ({ closeBooking }) => {
 
     try {
       // ✅ Your Render backend URL
-      const BACKEND_URL = "https://resort-booking-app-4sqm.onrender.com";
+      const BACKEND_URL = "https://resort-backend-2-21ki.onrender.com/";
 
       await axios.post(`${BACKEND_URL}/api/bookings`, formData);
 
